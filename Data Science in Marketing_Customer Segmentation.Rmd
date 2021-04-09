@@ -1,0 +1,88 @@
+---
+title: 'Data Science in Marketing: Customer Segmentation'
+author: "Bang Dawak"
+date: "4/9/2021"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pengantar
+
+Persiapan data adalah langkah pertama yang kita lakukan sebelum menggunakan algoritma apapun untuk melakukan analisa data.
+
+Ini dikarenakan tiap implementasi algoritma menuntut struktur dan tipe data yang berbeda.
+
+Dan untuk kasus algoritma K-Means yang akan kita gunakan untuk otomatisasi clustering, maka struktur datanya adalah data.frame atau matrix yang di dalamnya berisi angka semua. Tidak ada yang boleh bertipe karakter.
+
+Namun pada kasus riil, hal ini tentulah tidak mungkin. Contoh, isi data profesi seperti "Professional", "Ibu Rumah Tangga" adalah teks. Dan ini perlu dikonversi dulu ke numerik, namun jika diperlukan tetap bisa kembali mengambil data teks.
+
+Nah, untuk lebih jelasnya. Kita akan lakukan langkah-langkah praktek yang akan kita lakukan berikut ini adalah untuk mempersiapkan data sebelum dapat digunakan algoritma clustering:
+
+1. Mengenal Contoh File Dataset Pelanggan
+2. Membaca File dengan read.csv
+3. Vector untuk Menyimpan Nama Field
+4. Konversi Data dengan data.matrix
+5. Menggabungkan Hasil Konversi
+6. Menormalisasikan Nilai Belanja
+7. Membuat Data Master
+
+Dataset Customer Segments
+
+Dataset yang kita gunakan adalah data customer dengan field “Customer ID”, “Nama Pelanggan”,”Jenis Kelamin”,”Umur”, “Profesi”, “Tipe Residen” dan “Nilai Belanja Setahun” dengan tampilan sebagai berikut.
+
+Dataset ini bisa dilihat di <https://storage.googleapis.com/dqlab-dataset/customer_segments.txt>
+
+## Membaca data dengan fungsi read.csv
+
+Langkah pertama yang perlu kita lakukan adalah membaca dataset tersebut dari file teks menjadi data.frame di R dengan perintah **read.csv.**
+
+Mari kita praktekkan penggunaan read.csv ini dengan mengetikkan perintah berikut pada code editor.
+
+```{r}
+pelanggan <- read.csv("https://storage.googleapis.com/dqlab-dataset/customer_segments.txt", sep="\t")
+
+pelanggan[c("Jenis.Kelamin","Umur","Profesi","Tipe.Residen")]
+
+field_yang_digunakan <- pelanggan [c("Jenis.Kelamin","Umur","Profesi")]
+field_yang_digunakan
+```
+
+Keterangan code:
+
++ **pelanggan:** nama variable yang digunakan untuk menampung data dari contoh dataset
+
++ **csv:** function yang digunakan untuk membaca contoh dataset yang berupa file
+
++ https://storage.googleapis.com/dqlab-dataset/customer_segments.txt: lokasi dataset yang terdapat di web DQLab. Jika lokasi file dan aplikasi R terdapat di komputer lokal Anda, maka gantilah dengan lokasi file di lokal. Misalkan c:\data\customer_segments.txt
+Jika terjadi error berikut, maka periksa kembali penulisan code – huruf besar, huruf kecil dan juga penulisan lokasi file – dengan teliti.
+
+Error in file(file, "rt") : cannot open the connection
+
+Jika tidak terjadi error maka langkah selanjutnya adalah menampilkan isi data dengan mengetikkan nama variable pelanggan pada code editor sebagai berikut.
+
+pelanggan
+
+Hasil eksekusi perintah ini akan tampak sebagai berikut.
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

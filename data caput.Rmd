@@ -1,0 +1,22 @@
+---
+title: "Data Capaian Output"
+author: "Bang Dawak"
+date: "3/24/2021"
+output: html_document
+---
+
+# Data Wrangling
+```{r setup, include=FALSE}
+library(openxlsx)
+data.caput <- read.xlsx(xlsxFile="D:\\Lutfi\\ADI\\MS\\Output\\REKAP KERTAS KERJA CAPAIAN OUTPUT per 24 Maret 2021.xlsx")
+data.caput<- data.caput[-c(1),]
+names(data.caput)[6]<-paste("Output.DIPA")
+names(data.caput)[7]<-paste("Terkonfirmasi")
+names(data.caput)[8]<-paste("Tidak.Terkonfirmasi")
+data.caput$Output.DIPA<-as.integer(data.caput$Output.DIPA)
+data.caput$Terkonfirmasi<-as.integer(data.caput$Terkonfirmasi)
+data.caput$Tidak.Terkonfirmasi<-as.integer(data.caput$Tidak.Terkonfirmasi)
+str(data.caput)
+
+```
+

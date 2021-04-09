@@ -1,0 +1,808 @@
+---
+title: "Data Visualization in Data Science using R"
+author: "Bang Dawak"
+date: "3/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Pendahuluan
+
+Selamat datang di course Data Visualization with ggplot2, sebuah library tambahan di R yang sangat populer digunakan untuk visualisasi – populer karena grafik dapat dihasilkan dengan struktur perintah yang sangat generik tapi jelas dan rapi.
+
+Sepanjang course ini Anda akan mempelajari
+
++ Apa dan kenapa diperlukan ggplot2
++ Plot: Dasar "Kanvas" untuk Grafik
++ Melengkapi Plot dengan Data dan Aesthetic Mapping
++ Menggambar dengan Layer
++ Scatter Plot dan Pengaturan Warna
++ Visualisasi Trend dengan Grafik Line Chart
++ Membuat Bar Chart
++ Melihat Komposisi dengan Pie Chart
++ Histogram untuk Menampilkan Distribusi Kepadatan Penduduk Jakarta
++ Membagi Grafik dengan Faceting
+
+Dan untuk mempelajari ggplot ini disarankan mengikuti pengantar dan prakteknya secara terurut, bab demi bab. Ini dikarenakan function-function penting akan dicicil sepanjang course sebagai strategi penyampaian materi – dengan tujuan agar Anda tidak terlalu terbebani dengan materi yang disampaikan selanjutnya.
+
+Dengan dasar yang diperkenalkan di course ini, diharapkan Anda dapat memiliki kemampuan untuk memahami dan berkreativitas lebih lanjut dengan ggplot untuk menghasilkan berbagai grafik yang menarik.
+
+## Konsep Komponen di ggplot2
+
+Kekuatan ggplot adalah memiliki definisi yang jelas untuk komponen-komponen visual sehingga dapat digunakan untuk membangun visualisasi yang lengkap.
+
+Sebagai contoh, cobalah kita lihat grafik di bawah ini – yang berisi informasi tingkat kepadatan penduduk dibandingkan dengan luas wilayah di propinsi DKI Jakarta.
+
+Ada empat komponen ggplot2 pada grafik tersebut, yaitu **plot, data, aesthetic mapping dan layer.**
+
+**Plot**
+
+Paling awal adalah adanya plot atau "kanvas" kosong dimana berbagai grafik  dapat "digambar" di atasnya.
+
+Plot dapat dihasilkan dengan function bernama ggplot.
+
+Catatan Penting: Bedakan antara ggplot2 sebagai package dan ggplot sebagai function disini.
+
+**Data dan Aesthetic Mapping**
+
+Sebelum digambar, kanvas ini tentunya perlu memiliki data yang akan ditampilkan. Berikut adalah data yang kita gunakan untuk contoh grafik di atas. Data ini adalah data kependudukan dari Pemerintah Provinsi DKI Jakarta tahun 2013 yang diambil dari situs data.go.id.
+
+Dan dari contoh grafik awal, terlihat tidak semua kolom itu ditampilkan. Yang diperlukan hanya dua kolom, yaitu **Luas Wilayah (KM2) dan Kepadatan (Jiwa / KM2).**
+
+Kolom **Luas Wilayah (KM2)** akan mengisi absis (sumbu-x) dan **Kepadatan (Jiwa / KM2)** akan mengisi ordinat (sumbu-y). Dan kita gunakan kolom ketiga, yaitu Nama Kabupaten/Kota untuk pembeda warna (color).
+
+Komponen-komponen **x, y dan color** disebut komponen grafik atau **aesthetic** di ggplot2. Dan penggunaan ketiga kolom data ini ke dalam aesthetic disebut **aesthetic mapping.**
+
+Dengan adanya **plot, data, dan aesthetic mapping** ini menjadi bahan baku untuk melakukan step berikutnya: menggambar grafik itu sendiri dengan layer!
+
+**Layer**
+
+Layer adalah objek grafik itu sendiri. Sesuai namanya, objek-objek tersebut disusun dalam bentuk lapisan (layer).
+
+Setiap lapisan memiliki objek-objek berikut:
+
++ **Geom:** Bentuk geometri seperti garis (line), batang (bar), titik (point), dan lain-lain.
++ **Stat:** Atau suatu fungsi untuk melakukan transformasi statistik terhadap data input.
+
+Contoh paling sederhana adalah transformasi data untuk kepadatan jiwa dari angka menjadi range atau inverval per lima ribuan. Jadi data input dengan angka 8041 diubah menjadi interval angka 8001-8500. Transformasi ini disebut dengan bin.
+
++ **Position:** Posisi dari beberapa data yang memiliki nilai yang sama. Jika diplot sebagai scatter plot misalnya, tentunya data-data tersebut akan menumpuk di satu titik. Apakah perlu ditambahkan nilai acak tertentu sehingga pas digambarkan, terlihat datanya lebih tersebar? Jika iya, maka ini namanya **jitter.** Jika kita tidak ingin mengubah apa-apa, ini dinamakan **identity.**
+
+## Kesimpulan
+
+Selamat, Anda telah menyelesaikan bab penjelasan tentang ggplot2 dengan materi berikut:
+
++ ggplot2 sebagai package untuk visualisasi data di R.
++ pendekatan yang digunakan untuk ggplot2 adalah dengan suatu struktur tata bahasa (grammar) dimana komponen-komponen grafik dinamakan dengan detil dan jelas.
++ komponen-komponen penting di ggplot2 adalah plot, data, aesthetic mapping dan layer – yang merupakan komponen minimal untuk menghasilkan suatu grafik.
+
+# Dasar Kanvas
+
+## Pendahuluan
+Plot adalah komponen paling dasar di ggplot2, tanpa plot seluruh grafik tidak akan bisa ditampilkan. Dengan demikian, plot dapat dianalogikan sebagai "kanvas" gambar kita. Plot dibuat dengan function **ggplot.** Dan jika tidak digabungkan dengan komponen lain, maka tampilannya akan terlihat sebagai kotak persegi kosong dengan latar belakang abu-abu seperti gambar berikut.
+
+Bab ini akan membahas bagaimana kita menghasilkan kanvas, menambahkan judul, label,  merubah warna latar, menggunakan variable untuk objek plot, dan melihat detil dari objek plot dengan function summary.
+
+## Membuat Kanvas Kosong
+Untuk membuat plot, kita akan gunakan function ggplot. Function ini akan menghasilkan gambar sebagai berikut.
+```{r}
+library(ggplot2)
+ggplot()
+```
+
+## Menambahkan Judul
+
+Setiap orang akan sangat terbantu melihat suatu grafik apabila memiliki judul yang jelas. Ini dapat ditambahkan di ggplot dengan fungsi **labs(title = "....").**
+
+Contoh perintah (syntax) dari labs adalah sebagai berikut:
+
+```{r}
+ggplot() + labs(title="Luas Wilayah vs Kepadatan Penduduk DKI Jakarta - Periode 2013")
+```
+
+## Plot disimpan sebagai Variable
+
+Komponen plot dan layer bisa disimpan saja dalam satu variable. Berikut adalah contoh perintah dimana kita memiliki satu variable bernama **plot.jakarta** yang menyimpan plot dan judul. Kemudian menampilkan grafik dengna hanya menuliskan nama variable tersebut.
+
+```{r}
+plot.jakarta <- ggplot()
+plot.jakarta <- plot.jakarta + labs(title="Luas Wilayah vs Kepadatan Penduduk DKI Jakarta - Periode 2013")
+plot.jakarta
+```
+
+## Menambahkan Label pada Sumbu X dan Y
+
+Function labs yang sudah diperkenalkan pada tiga praktek sebelumnya bukan hanya bisa diisi dengan judul dan subjudul, tapi bisa juga untuk mengisi teks pada sumbu x dan y.
+
+Berikut adalah konstruksi perintahnya:
+
+[objek plot] + labs(x="Label X", y = "Label Y")
+
+Catatan: Function labs ini bisa digunakan berkali-kali pada plot. Ini artinya kita bisa menambahkan x dan y pada function labs sebelumnya, atau menambahkan function labs baru untuk mengisi label x dan y.
+
+## Fungsi summary untuk objek ggplot
+
+Tidak setiap saat kita harus menganalisa plot dan komponennya dengan cara ditampilkan. Ketika sudah disimpan di variable, kita bisa melihat detilnya dalam bentuk tekstual dengan menggunakan fungsi **summary.**
+
+Mari kita langsung praktekkan saja melalui tugas berikut.
+
+```{r}
+library(ggplot2)
+plot.jakarta <- ggplot()
+plot.jakarta <- plot.jakarta + labs(title="Luas Wilayah vs Kepadatan Penduduk DKI Jakarta")
+plot.jakarta <- plot.jakarta + labs(x = "Luas Wilayah (km2)", y="Kepadatan Jiwa per km2")
+summary(plot.jakarta)
+```
+
+## Kesimpulan
+
+Plot adalah komponen paling dasar di ggplot2, tanpa plot seluruh grafik tidak akan bisa ditampilkan. Dengan demikian, plot adalah "kanvas" grafik. Untuk membuat plot kita gunakan fungsi bernama **ggplot()**
+
+Kita dapat tambahkan komponen grafik lain di atas plot. Dan pada bab ini kita telah menambahkan:
+
++ Teks judul dengan fungsi labs(title="...").
++ Teks pada sumbu x dan y dengan fungsi labs(x="...", y="...").
+
+Selain itu juga ditunjukkan bagaimana sebaiknya objek plot disimpan ke variable. Dengan cara ini, kita bisa mengolahnya dengan lebih rapi. Terakhir, kita menampilkan informasi plot ini dengan menggunakan fungsi **summary.**
+
+# Data dan Aesthetic Mapping
+
+## Dataset Kepadatan Penduduk Jakarta
+
+Dataset yang akan kita gunakan sepanjang praktek course ini adalah data wilayah dan kepadatan kependudukan pemerintah provinsi DKI Jakarta tahun 2013. Sumber dataset ini dapat didownload dari data.go.id, dengan url lengkap berikut:
+
+**https://data.go.id/dataset/kepadatandluaswilayahperkelurahandkijakarta*
+
+Data kependudukan dipilih karena hampir seluruh organisasi, termasuk bisnis dan institusi pemerintah memerlukan ini untuk mengambil keputusan strategik. Sebagai contoh, dimana saya perlu membuka toko atau kantor cabang? Produk apa yang bakal laku di area tersebut?
+
+Nah, atas dasar itulah data kependudukan dipilih untuk course visualisasi data kali ini.
+
+Perhatikan seluruh kolom berisi informasi berupa angka, kecuali empat kolom berikut: NAMA PROVINSI, NAMA KABUPATEN/KOTA, NAMA KECAMATAN, dan NAMA KELURAHAN. Dataset ini memiliki detil sampai ke tingkat kelurahan. Contoh yang cukup bagus untuk kita olah.
+
+### Membaca Dataset Kependudukan dengan read.csv
+
+Langkah pertama yang perlu kita lakukan adalah membaca dataset kependudukan tersebut dari file teks menjadi data.frame di R dengan perintah **read.csv.**
+
+Mari kita praktekkan penggunaan read.csv ini dengan mengetikkan perintah berikut pada code editor.
+
+```{r}
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+penduduk.dki
+```
+
+Jika terjadi error berikut, cobalah periksa kembali penulisan code – huruf besar, huruf kecil dan juga penulisan lokasi file – dengan teliti.
+
+Error in file(file, "rt") : cannot open the connection
+
+Terlihat isi data dari tujuh kolom pertama dan terdapat nomor baris pada tiap data yang ditampilkan.
+
+Perhatikan jika nama kolom asal terdapat karakter yang bukan angka atau hurud, akan diubah menjadi tanda titik setelah dibaca dengan read.csv.
+
+Sebagai contoh, "NAMA PROVINSI" diubah menjadi "NAMA.PROVINSI", "LUAS WILAYAH (KM2)" diubah menjadi "LUAS.WILAYAH..KM2.".
+
+Catatan: Walaupun nama kolom ini terlihat tidak standar dan tidak menyenangkan, kita akan biarkan nama kolom tetap seperti ini tanpa melakukan proses cleansing. Tetapi pada saat plotting, seperti telah ditunjukkan pada bab sebelumnya, kita bisa memberi label text sesuai keinginan kita. Disitulah kesempatan kita untuk merapikan tampilan teks dari kolom.
+
+Jika kita hanya ingin menampilkan beberapa kolom tertentu, misalkan untuk kolom "NAMA.KECAMATAN" dan "NAMA.KELURAHAN" maka perintahnya adalah sebagai berikut.
+
+```{r}
+penduduk.dki[c("NAMA.KECAMATAN","NAMA.KELURAHAN")]
+```
+
+## Memasukkan Data ke Plot
+
+Data dapat dimasukkan ke dalam plot melalui argumen di function ggplot dengan syntax berikut.
+
+ggplot(data = …)
+
+Untuk contoh data kependudukan kita, maka perintah lengkapnya adalah sebagai berikut.
+
+ggplot(data = penduduk.dki)
+
+```{r}
+# Masukkan data ke dalam plot dan simpan sebagai variable plot.dki, dan tampilkan summary dari plot tersebut
+plot.dki<-ggplot(penduduk.dki)
+summary(plot.dki)
+```
+
+### Memetakan x, y dan color dengan function aes
+
+Setelah data dimasukkan pada plot, saatnya kita memetakan kolom yang diperlukan pada data tersebut ke elemen visual. Pemetaan ini disebut dengan aesthetic mapping.
+
+Untuk melakukan hal ini, kita gunakan function aes yang memiliki syntax berikut.
+
+aes([nama_elemen_1] = [nama_kolom_atau_nilai_ 1], [nama_elemen_2] = [nama_kolom_atau_nilai_ 1] …)
+
+### Menampilkan Plot hasil Mapping
+Masih terkait dengan praktek sebelumnya, ada pertanyaan yang muncul di benak kita. Seperti apa tampilan dari plot yang telah dilengkapi dengan data dan aesthetic mapping?
+
+Untuk menjawab hal ini, cobalah jalankan tugas praktek berikut.
+
+```{r}
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+plot.dki <- ggplot(data=penduduk.dki, aes(x = LUAS.WILAYAH..KM2.,  y=KEPADATAN..JIWA.KM2.,  color=NAMA.KABUPATEN.KOTA))
+plot.dki
+```
+
+### Menampilkan Plot hasil Mapping
+
+Masih terkait dengan praktek sebelumnya, ada pertanyaan yang muncul di benak kita. Seperti apa tampilan dari plot yang telah dilengkapi dengan data dan aesthetic mapping?
+
+Untuk menjawab hal ini, cobalah jalankan tugas praktek diatas.
+
+## Kesimpulan
+
+Plot memerlukan dua input sebagai bahan bakunya agar bisa digunakan lebih jauh, yaitu data dan aesthetic mapping (pemetaan beberapa kolom data ke elemen visual).
+
+# Layer untuk Grafik Pertama: Scatter Plot
+
+## Pendahuluan
+
+Mengulang kembali sedikit konsep yang telah dipaparkan di bab awal, grafik bisa dihasilkan dengan menambahkan layer secara berlapis di atas plot.
+
+Setiap layer terdiri dari objek-objek berikut:
+
++ Geom: Bentuk geometri seperti garis (line), batang (bar), titik (point), dan lain-lain.
++ Stat: Atau suatu fungsi untuk melakukan transformasi statistik terhadap data input.
++ Contoh paling sederhana adalah transformasi data untuk kepadatan jiwa dari angka menjadi range atau inverval per lima ribuan. Jadi data input dengan angka 8041 diubah menjadi interval angka 8001-8500. Transformasi ini disebut dengan bin. Jika kita tidak ingin mengubah apa-apa, stat yang kita gunakan adalah identity.
++ Position: Posisi dari beberapa data yang memiliki nilai yang sama. Jika diplot sebagai scatter plot misalnya, tentunya data-data tersebut akan menumpuk di satu titik. Apakah perlu ditambahkan nilai acak tertentu sehingga pas digambarkan, terlihat datanya lebih tersebar? Jika iya, maka ini namanya jitter. Jika kita tidak ingin merubah posisi, maka kita gunakan **identity.**
+
+Berikut adalah diagram summary untuk proses menampilkan grafik dengan objek plot dan layer.
+
+**PLOT**
+
+1. Data
+2. Aesthetic mapping
+
+* + Layer
+* + layer
+* - geom: point, histogram
+* - stat: identity, bin
+* - position: identity
+
+## Scatter Plot Kepadatan Penduduk Jakarta dengan function layer
+
+Untuk menggambar grafik sebenarnya pada ggplot, kita menambahkan apa yang dinamakan layer. Layer bisa dihasilkan dengan menggunakan function layer dengan syntax berikut:
+
+```{r}
+library(ggplot2)
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+
+#Menambahkan data dan aesthetic mapping
+plot.dki <- ggplot(data=penduduk.dki, aes(x = LUAS.WILAYAH..KM2.,  y=KEPADATAN..JIWA.KM2.,  color=NAMA.KABUPATEN.KOTA))
+
+#Menambahkan layer untuk menghasilkan grafik scatter plot
+plot.dki + layer(geom="point", stat="identity", position="identity")
+```
+
++ Layer
+
+Function yang digunakan untuk membentuk layer untuk ditambahkan pada plot
+
++ geom
+
+Bentuk geometri yang digunakan untuk layer. Beberapa daftar geometri yang bisa diberikan adalah sebagai berikut:
+
+  - point: untuk menggambar grafik berupa titik yang menunjukkan hubungan antar variable atau scatter plot
+  - line: diagram garis
+  - hline: diagram garis horizontal
+  - bar: diagram batang
+  - histogram: histogram
+  - dll
+
++ stat
+
+Jenis transformasi untuk merubah data dari bentuk asli ke bentuk lain. Beberapa daftar stat yang bisa digunakan antara lain adalah sebagai berikut:
+ 
+  * identity: tidak melakukan transformasi
+  * bin: membagi data menjadi interval
+  * sum: menjumlahkan nilai-nilai yang unik
+  * summary: melakukan summary dari semua nilai y untuk setiap titik data x
+  * dll
+
++ position
+
+Perubahan posisi terhadap tiap titik yang terdapat pada layer. Beberapa daftar position yang bisa digunakan antara lain adalah sebagai berikut:
+
+  * identity: tidak ada perubahan posisi
+  * jitter: merubah posisi dengan jarak acak tertentu dari posisi awal, ini digunakan untuk memberi kejelasan jika banyak titik yang overlapping (saling tindih)
+  * stack: menyusun posisi dalam bentuk tumpukan
+  * dll
+
+## Scatter Plot Kepadatan Penduduk Jakarta dengan geom_point
+
+Perintah layer untuk menggambar scatter plot pada subbab sebelumnya, memiliki shortcut function yang lebih pendek. Function tersebut bernama **geom_point.**
+
+## Menambahkan Judul dan Label
+
+Scatter plot yang dihasilkan sudah menarik untuk kita, namun label teks pada x, y dan color masih terasa kurang bagus. Bukankah begitu? Mari kita perhatikan.
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+
+#Menambahkan data dan aesthetic mapping
+plot.dki <- ggplot(data=penduduk.dki, aes(x = LUAS.WILAYAH..KM2.,  y=KEPADATAN..JIWA.KM2.,  color=NAMA.KABUPATEN.KOTA))
+
+#Menambahkan Layer dan labels
+plot.dki + geom_point() + 
+  theme(plot.title = element_text(hjust=0.5)) +
+  labs(title="Luas Wilayah vs Kepadatan Penduduk DKI Jakarta", x="Luas Wilayah (km2)", y="Kepadatan Jiwa per km2", color="Nama Kabupaten/Kota")
+
+```
+
+Catatan: Pada code terdapat perintah baru, yaitu **theme(plot.title = element_text(hjust=0.5))**. Ini adalah code untuk menempatkan judul di tengah plot.
+
+## Kesimpulan
+
+Layer diperlukan agar grafik sebenarnya dapat digambar di atas objek plot. Layer dibuat dengan function layer. Parameter function layer yang harus diisi terdiri dari geom, stat dan position.
+
+Dengan pengisian nilai yang berbeda-beda terhadap tiga parameter ini, kita bisa menghasilkan berbagai macam grafik. Pada bab ini, grafik yang kita hasilkan adalah "scatter plot" dimana parameter geom bernilai "point", stat dan position bernilai "identity".
+
+Selain menggunakan function layer, tiap objek juga memiliki function yang memiliki prefix geom_, stat_ , dan position_. Misalkan, untuk geom bertipe point memiliki function geom_point. Ini dibuat dengan tujuan agar beberapa nilai default untuk tiap-tiap objek sudah dispesifikasikan di function-function berprefix.
+
+Dan bab ditutup dengan praktek dimana kita bisa menyelesaikan satu grafik lengkap dengan judul, dan label-label yang lebih mudah dibaca.
+
+# HISTOGRAM
+
+## Pendahuluan
+
+Histogram adalah tipe visualisasi yang sangat cocok untuk menggambarkan data distribusi dari jumlah populasi data. Dan dataset kependudukan adalah contoh yang baik dimana kita bisa menggambarkan distribusi kepadatan penduduk dengan jumlah kelurahan.
+
+Untuk membuat histogram, kita gunakan geom bertipe histogram dan stat bin, yang bisa diwakili oleh function geom_histogram.
+
+## Layer geom_histogram dan Lebar Interval
+
+Untuk menghasilkan histogram maka kita gunakan function geom_histogram untuk ditambahkan ke plot.
+
+Layer histogram ini memerlukan stat bertipe bin, yaitu membagi data menjadi interval. Namun dengan penggunaan geom_histogram, stat ini sudah menjadi bin secara default jadi tidak perlu lagi dispesifikasikan.
+
+Secara default geom histogram tidak memerlukan aesthetic mapping untuk sumbu y, cukup menggunakan sumbu x.
+
+Namun ada parameter yang perlu diinput, yaitu besarnya interval bin. Ini menggunakan parameter binwidth.
+
+Contoh untuk membuat layer geom_histogram adalah sebagai berikut.
+
+[objek plot] + geom_histogram(binwidth=5000)
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+
+#Menambahkan data dan aesthetic mapping
+plot.dki <- ggplot(data=penduduk.dki, aes(x = KEPADATAN..JIWA.KM2.))
+plot.dki + geom_histogram(binwidth=10000)
+```
+
+## Penggunaaan aesthetic fill
+
+Kita dapat melakukan banyak penambahan informasi pada histogram sebelumnya. Salah satunya adalah melihat porsi jumlah kelurahan berdasarkan nama kabupaten / kota pada tiap rentang histogram sepreti berikut.
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+
+plot.dki <- ggplot(data=penduduk.dki, aes(x = KEPADATAN..JIWA.KM2., fill=NAMA.KABUPATEN.KOTA))
+
+plot.dki + geom_histogram(binwidth = 10000)
+
+```
+
+
+Untuk ini kita menggunakan aesthetic fill dengan syntax berikut.
+
+ aes(fill = NAMA.KABUPATEN.KOTA)
+
+Catatan: aesthetic color sebenarnya juga bisa digunakan namun hasilnya akan tampak sebagai berikut.
+
+## Kesimpulan
+
+Histogram adalah tipe visualisasi yang sangat cocok untuk menggambarkan data distribusi dari jumlah populasi data. Dan dataset kependudukan adalah contoh yang baik dimana kita bisa menggambarkan distribusi kepadatan penduduk dengan jumlah kelurahan.
+
+Praktek pada bab ini cukup simpel dan straightforward, dimana kita telah menggunakan function geom_histogram dengan parameter binwidth untuk menghasilkan grafik distribusi.
+
+# Visualisasi Trend dengan Line Chart
+
+## Pendahuluan
+
+Line chart atau grafik garis adalah tipe visualisasi yang sangat baik untuk menggambarkan apa impact (pengaruh) dari perubahan suatu variable dari satu titik ke titik lain atau trend– dan variable yang paling umum digunakan adalah waktu.
+
+Sebagai contoh, di bidang ekonomi untuk menggambarkan inflasi dari bulan ke bulan. Namun tentunya tidak harus selalu waktu. Perubahan lain, misalkan pengaruh kecepatan lari dengan peningkatan detak jantung.
+
+Untuk membuat line chart standar, kita gunakan geom bertipe line dan stat identity, yang bisa diwakili oleh function geom_line.
+
+Pada bab berikut kita akan gunakan dataset tambahan, yaitu tingkat inflasi bulanan tahun 2017 untuk negara Indonesia dan Singapura. Selain plotting, diperkenalkan juga konsep factoring untuk menangani data dan grouping untuk grafik.
+
+## Dataset Inflasi
+
+Untuk dataset untuk inflasi kita akan "loncat" sedikit ke dataset lain, yaitu dataset inflasi sepanjang tahun 2017 untuk negara Indonesia dan Singapore.  Dataset ini dikumpulkan oleh DQLab untuk keperluan pelatihan dan dapat didownload di:
+
+https://storage.googleapis.com/dqlab-dataset/inflasi.csv
+
+## Membaca data inflasi
+
+Langkah pertama yang perlu kita lakukan adalah membaca dataset inflasi tersebut dari file teks menjadi data.frame di R dengan perintah read.csv.
+
+Berdasarkan keterangan mengenai dataset ini dan praktek di dua bab sebelumnya, kita langsung lakukan praktek sebagai berikut.
+
+```{r}
+#Membaca data csv dan dimasukkan ke variable inflasi.indo.sing
+inflasi.indo.sing<-read.csv("https://storage.googleapis.com/dqlab-dataset/inflasi.csv", sep=",")
+inflasi.indo.sing
+```
+
+
+## Error pada saat Plotting Line Chart
+
+Untuk membuat line chart dari data inflasi, kita lakukan langkah-langkah dari ggplot2:
+
++ Membuat plot, dengan function ggplot()
++ Mengisi data dari pembacaan file dengan function read.csv()
++ Membuat aesthetic mapping, dengan function aes
++ Menambahkan layer, dengan function geom_line()
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable inflasi.indo.sing
+inflasi.indo.sing <- read.csv("https://storage.googleapis.com/dqlab-dataset/inflasi.csv", sep=",")
+
+#Menambahkan data dan aesthetic mapping
+plot.inflasi <- ggplot(data=inflasi.indo.sing, aes(x = Bulan,  y=Inflasi,  color=Negara, group=Negara))
+
+#Menambahkan layer
+plot.inflasi + geom_line()
+```
+
+## Menggunakan Pengelompokan Data (grouping)
+
+Pada praktek sebelumnya, kita tidak mendapatkan grafik trend inflasi dari negara Indonesia dan Singapura. 
+
+Penyebabnya adalah sistem kebingungan karena data untuk tiap bulan memiliki dua titik data, yang akan menjadi kendala karena tiap line perlu satu titik data untuk sumbu x dan y.
+
+Ini karena kita belum membagi data dengan aesthetic grouping dengan konstruksi berikut. Walaupun pada gambar kita sudah memiliki aesthetic color yang membagi Indonesia dan Singapura, tapi kita masih perlu memiliki aesthetic group sebagai berikut:
+
+aes(…, group=Negara)
+
+Dimana … mewakili pasangan aesthetic mapping lainnya.
+
+## Memperbaiki Urutan Bulan dengan Factoring
+
+Urutan bulan yang salah pada praktek sebelumnya karena masalah pengurutan internal di sistem R, yang mengurutkan berdasarkan alphabet.
+
+Kita dapat secara manual merubah urutan ini dengan factor dan parameter levels dimasukkan manual.
+
+Dengan data bulan dari Jan s/d Oct 2017 maka konstruksi factor adalah sebagai berikut.
+
+```{r}
+factor(inflasi.indo.sing$Bulan, levels = c("Jan-2017", "Feb-2017", "Mar-2017", "Apr-2017", "May-2017", "Jun-2017", "Jul-2017", "Aug-2017", "Sep-2017", "Oct-2017"))
+
+inflasi.indo.sing$Bulan <- factor(inflasi.indo.sing$Bulan, levels = c("Jan-2017", "Feb-2017", "Mar-2017", "Apr-2017", "May-2017", "Jun-2017", "Jul-2017", "Aug-2017", "Sep-2017", "Oct-2017"))
+```
+
+## Plotting Ulang dengan hasil Factoring
+
+Dengan proses perbaikan pengurutan yang telah kita lakukan sebelumnya, saatnya kita plotting ulang data inflasi kita.
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable inflasi.indo.sing
+inflasi.indo.sing <- read.csv("https://storage.googleapis.com/dqlab-dataset/inflasi.csv", sep=",")
+
+inflasi.indo.sing$Bulan = factor(inflasi.indo.sing$Bulan, 
+                                 levels = c("Jan-2017", "Feb-2017", "Mar-2017", "Apr-2017", "May-2017", "Jun-2017", "Jul-2017", "Aug-2017", "Sep-2017", "Oct-2017"))
+
+#Menambahkan data dan aesthetic mapping
+plot.inflasi <- ggplot(data=inflasi.indo.sing, aes(x = Bulan,  y=Inflasi,  color=Negara, group=Negara))
+
+#Menambahkan Layer dan labels
+plot.inflasi + geom_line() + geom_text(aes(label=Inflasi),hjust=-0.2, vjust=-0.5)
+```
+
+## Kesimpulan
+
+Line chart menggunakan geom line telah kita praktekkan pada bab untuk menampilkan tren inflasi negara Indonesia dan Singapura untuk periode Januari s/d Oktober 2017.
+
+Terlihat juga bahwa dataset yang kita baca dari file teks ini tidak bisa langsung digunakan begitu saja karena ada urutan data pada kolom Bulan yang perlu diubah.
+
+Dengan treatment data yang baik dan dengan penambahan aesthetic baru – yaitu grouping – kita telah menyelesaikan pembuatan line chart sederhana dengan ggplot.
+
+# Bar Chart dan Pie Chart
+
+## Pendahuluan
+
+Dengan praktek yang telah kita lakukan untuk menghasilkan scatter plot dan line chart, kita melangkah ke praktek untuk membuat bar chart dan pie chart.
+
+Bar chart atau grafik batang adalah salah satu tipe visualisasi yang sudah umum digunakan yang sangat baik untuk melakukan perbandingan data multi kategori. Sedangkan pie chart sangat berguna untuk melihat rasio.
+
+Kita kembali akan menggunakan dataset kependudukan Jakarta, namun telah dirubah untuk kepentingan kedua chart ini.
+
+## Dataset Kependudukan Jakarta versi DQLab
+
+Pada dataset asli kependudukan Jakarta, terdapat kolom-kolom jumlah penduduk per kabupaten yang tersebar ke banyak kolom dengan pembagian umur dan jenis kelamin di nama kolom, seperti terlihat pada gambar berikut.
+
+Kolom-kolom ini akan butuh banyak data treatment atau data preparation sebelum dapat digunakan untuk kepentingan penggunaan grafik kita untuk bab ini.
+
+Oleh sebab itu, DQLab telah melakukan proses tersebut sehingga datanya menjadi seperti bentuk berikut.
+
+Dengan demikian, dataset ini telah kita ubah strukturnya tanpa menghilangkan informasi aslinya. File csv dari dataset ini dapat didownload di url berikut:
+
+https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv
+
+Catatan: Detil transformasi data yang dilakukan akan dibahas di course "Data Preparation / Wrangling with R"
+
+## Menghasilkan Bar Chart Pertama
+
+Untuk menghasilkan bar chart kita bisa gunakan function geom_bar. Function ini akan menghasilkan sebuah layer untuk kita tambahkan ke plot.
+
+Secara default, stat yang digunakan oleh geom_bar adalah count sehingga bar chart hanya akan menghitung jumlah baris data point per x, dan tidak membutuhkan aesthetic mapping y.
+
+Berikut adalah contoh perintah dimana kita menghasilkan bar chart dengan dataset kependudukan DKI Jakarta.
+
+plot.dki <- ggplot(data=penduduk.dki, aes(x = NAMA.KABUPATEN.KOTA))
+
+plot.dki + geom_bar()
+
+Ini akan menghasilkan gambar chart berikut. Kelihatan aneh karena jumlah baris data untuk Laki-laki dan Perempuan di dataset kita seimbang. Dan karena stat untuk geom bar adalah count, maka yang ditampilkan adalah jumlah baris data. Ini akan kita rubah pada praktek selanjutnya.
+
+```{r}
+library(ggplot2)
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv", sep=",")
+plot.dki<-ggplot(data=penduduk.dki, aes(x=NAMA.KABUPATEN.KOTA))
+plot.dki+geom_bar()
+```
+
+## Aesthetic Y dan Stat Identity
+
+Pada praktek sebelumnya, bar chart kita masih mirip dengan histogram. Dan itu bukan yang kita inginkan.
+
+Kita akan memplot bar chart, dimana aesthetic y menggunakan stat penjumlahan (sum) - bukan count - dari data kepadatan penduduk.
+
+Ini bisa dilakukan dengan mengisi dua hal berikut:
+
++ Mengisi aesthetic y dengan kolom grouping yang kita inginkan - yaitu kolom bernama JUMLAH - pada plot (ggplot).
+y=JUMLAH
++ Mengisi parameter stat dengan nilai identity pada bagian layer (geom_bar)..
+stat="identity"
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv", sep=",")
+
+#Menghasilkan bar chart
+
+#Membuat plot
+plot.dki <- ggplot(data=penduduk.dki, aes(x = NAMA.KABUPATEN.KOTA, y=JUMLAH))
+
+#Menambahkan layer pada plot
+plot.dki + geom_bar(stat="identity")
+```
+
+## Aesthetic Fill dan Position Dodge
+
+Pada subbab sebelumnya, kita melihat efek pergantian nilai stat pada geom_bar dari count (nilai default) menjadi identity untuk mendapatkan total penjumlahan dari angka jumlah penduduk. Saatnya kita bisa lebih memperbaiki bar chart kita dengan informasi grouping seperti berikut.
+
+```{r}
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv", sep=",")
+
+#Bagian plot
+plot.dki <- ggplot(data=penduduk.dki, aes(x = NAMA.KABUPATEN.KOTA, y=JUMLAH, fill=JENIS.KELAMIN))
+
+#Bagian penambahan layer
+plot.dki + geom_bar(stat="identity", position="dodge")
+```
+
+Kita abaikan label yang menumpuk terlebih dahulu, terlihat bar chart ini telah memiliki informasi jumlah penduduk, dengan series berdasarkan jenis kelamin dan kemudian dikategorikan berdasarkan nama kabupaten / kota.
+
+Untuk melakukan hal ini, ada dua hal yang mesti kita lakukan:
+
++ Aesthetic fill pada objek plot perlu diberikan input kolom JENIS.KELAMIN.
+fill=JENIS.KELAMIN
++ Agar data antara Laki-laki dan Perempuan tidak menjadi satu bar, position pada layer kita isi dengan nilai dodge – dimana objek satu dengan objek yang lain diposisikan bersisian.
+position="dodge"
+
+## Fungsi Aggregate
+
+Data frame yang kita gunakan pada plot, sering sekali harus dilakukan summary terlebih sehingga dapat diproses lebih mudah oleh layer di ggplot.
+
+Fungsi summary yang bisa kita gunakan adalah function **aggregate**, yang memiliki minimal tiga input sebagai berikut:
+
++ x: merupakan list dari kolom data yang ingin kita jadikan summary
++ FUN: function summary yang bisa kita gunakan, misalkan sum, mean, dan lain-lain
++ by: list berisi pasangan daftar field yang ingin kita gunakan
+Untuk lebih jelasnya, kita langsung gunakan contoh sebagai berikut:
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv", sep=",")
+#Melakukan agregasi
+aggregate(x=list(JUMLAH=penduduk.dki$JUMLAH), FUN=sum, by=list(NAMA.KABUPATEN.KOTA=penduduk.dki$NAMA.KABUPATEN.KOTA, JENIS.KELAMIN=penduduk.dki$JENIS.KELAMIN))
+
+```
+
+## "Merapikan" Tampilan Bar Chart
+
+Kalau kita perhatikan grafik bar chart yang telah kita hasilkan. Masih ada beberap hal yang perlu dirapikan. Selain penamaan label, contoh perapian yang perlu kita lakukan adalah memperbaiki posisi isi data pada sumbu x sehingga tidak  menumpuk, sehingga tampilannya sebagai berikut.
+
+```{r}
+library(ggplot2)
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv", sep=",")
+#Melakukan agregasi
+p <- aggregate(x=list(JUMLAH=penduduk.dki$JUMLAH), FUN=sum, by = list(NAMA.KABUPATEN.KOTA=penduduk.dki$NAMA.KABUPATEN.KOTA, JENIS.KELAMIN=penduduk.dki$JENIS.KELAMIN))
+
+#Plot grafik
+plot.dki <- ggplot(data=p, aes(x = NAMA.KABUPATEN.KOTA, y=JUMLAH, fill=JENIS.KELAMIN, label = JUMLAH))
+plot.dki <- plot.dki + geom_bar(stat="identity", position="dodge")  
+plot.dki <- plot.dki + labs(title="Jumlah Penduduk DKI Jakarta Umur > 35 - Tahun 2013", x="Kabupaten / Kota", y="Jumlah Penduduk")
+plot.dki <- plot.dki + theme(axis.text.x = element_text(angle=45,vjust = 0.5), plot.title = element_text(hjust=0.5))
+plot.dki <- plot.dki + geom_text(position = position_dodge(1.2))
+plot.dki
+```
+
+
++ aggregate(…) = Menggunakan fungsi aggregate yang dibahas pada praktek sebelumnya
+
++ theme(…) = Function untuk mengatur teks pada grafik
+
++ axis.text.x = element_text(angle=45,vjust = 0.5))
+= Melakukan rotasi text data (axis.text.x) sebesar 45 derajat ke kiri (angle=45), dan penempatan teks secara vertical di tengah-tengah (vjust=0.5).
+
++ plot.title = element_text(hjust=0.5)= 
+Mengatur posisi teks pada title ke tengah
+
++ geom_bar(stat="identity", position="dodge")=  Grafik bar chart dimana posisi data yang dispesifikasikan di fill, ditempatkan bersisian (position="dodge")
+
++ label = JUMLAH untuk Penempatan kolom JUMLAH sebagai label untuk marking data pada aestethic mapping
+
++ geom_text(position = position_dodge(1.2))untuk Mengatur posisi text untuk nilai data saat ini di atas bar plot
+
+## Pie Chart dengan Koordinat Polar
+
+Pie chart adalah jenis grafik yang banyak digunakan secara umum untuk menampilkan rasio. Dan uniknya, di ggplot2 tidak ada fungsi khusus yang menghasilkan pie chart ini.
+
+Pie chart dihasilkan dengan proses yang cukup unik, dimana koordinat dari geom bar diubah ke polar.
+
+Untuk lebih jelasnya, kita gunakan contoh langkah demi langkah.
+
+Jika kita memilik plot data kependudukan di variable p, dan kita ingin membentuk suatu grafik geom bar yang tidak ada pemetaan x-nya, tapi sumbu y diisi dengan JUMLAH, dan pengisian warna menggunakan NAMA.KABUPATEN.KOTA maka perintahnya adalah sebagai berikut.
+
+```{r}
+plot.dki <- ggplot(data=p, aes(x="", y=JUMLAH, fill = NAMA.KABUPATEN.KOTA))
+plot.dki + geom_bar(width = 1, stat = "identity")
+```
+
+Nah, bayangkan grafik ini kemudian diputar ke dalam koordinat polar sehingga menjadi seperti berikut.
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/datakependudukandki-dqlab.csv", sep=",")
+#Melakukan agregasi
+p <- aggregate(x=list(JUMLAH=penduduk.dki$JUMLAH), FUN=sum, by = list(NAMA.KABUPATEN.KOTA=penduduk.dki$NAMA.KABUPATEN.KOTA))
+#Plot grafik pie chart
+plot.dki <- ggplot(data=p, aes(x="", y=JUMLAH, fill = NAMA.KABUPATEN.KOTA))
+
+plot.dki <- plot.dki + geom_bar(width = 1, stat = "identity")
+plot.dki <- plot.dki + coord_polar("y", start=0)
+plot.dki
+```
+
+Perputaran ini membuat bar chart tadi ditransformasikan menjadi pie chart.
+
+Walaupun terlihat tidak sempurna, untuk saat ini kita tidak akan membahas terlalu jauh lagi mengenai pie chart kecuali Anda melakukan tugas praktek untuk menghasilkan grafik di atas.
+
+## Kesimpulan
+
+Pada bab ini, kita telah menyelesaikan teori dan praktek untuk membuat bar chart dan pie chart.
+
+Walaupun kelihatan sederhana, untuk menghasilkan bar chart kita perlu mengerti beberapa function dan proses sebagai berikut:
+
++ Dataset kependudukan yang telah kita gunakan pada bab-bab sebelumnya sangat sulit digunakan dan perlu ditransformasikan terlebih dahulu.
+
++ Geom bar secara default hanya memerlukan aesthetic mapping x, karena secara internal geom bar ini menggunakan stat = "count".
+
++ Jika ingin menghitung agregasi sum, lebih baik kita gunakan variable baru yang menampung hasil agregasi dengan function aggregate.
+
++ Untuk membuat bar chart dengan grouping yang bersisian, kita gunakan aesthetic mapping fill dan positioning dodge.
+
++ Bar chart dan pie chart adalah grafik dari ggplot2 yang memiliki karakteristik yang hampir sama, kecuali koordinat polarnya.
+
+# Membagi Grafik Dengan Faceting
+
+## Pendahuluan: Apa dan kenapa Faceting?
+
+Faceting pada ggplot2 adalah:
+
+proses pembagian dataset menjadi potongan beberapa subset data
+dan menghasilkan visualisasi dari potongan-potongan tersebut
+dengan tujuan agar data lebih mudah dimengerti
+Dua gambar berikut adalah contoh faceting dari scatter plot tunggal menjadi 6 potongan scatter plot, dipotong berdasarkan kolom NAMA.KABUPATEN.KOTA.
+
+## Faceting pada Scatter Plot
+
+Ada dua function untuk facet, yaitu facet_wrap dan facet_grid. Kedua function tersebut fungsinya sama, yaitu membagi subset menjadi layout kotak matrix seperti pada contoh di teks pengenalan.
+
+Functiono facet_grid memerlukan dua variable, misalkan provinsi dan kabupaten untuk membagi dataset. Sedangkan function facet_wrap hanya memerlukan satu variable, dataset dibagi berdasarkan jumlah kolom yang diinginkan.
+
+Kita akan ambil scatter plot pada bab awal untuk dataset kependudukan dan kita bagi menjadi berdasarkan variable NAMA.KABUPATEN.KOTA dan 2 kolom dengan facet_wrap.
+
+Konstruksi lengkap untuk contoh tersebut adalah sebagai berikut:
+
+facet_wrap( ~ NAMA.KABUPATEN.KOTA, ncol=2)
+
+
++ facet_wrap merupakan Fungsi faceting pada ggplot2
+
++ ~ NAMA.KABUPATEN.KOTA merupakan Facet wrap hanya menggunakan satu variable saja. Dan variable yang digunakan diletakkan di sebelah kanan tanda ~.
+
++ ncol=2 merupakan Jumlah kolom pembagian adalah 2
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+
+#Menambahkan data dan aesthetic mapping
+plot.dki <- ggplot(data=penduduk.dki, aes(x = LUAS.WILAYAH..KM2.,  y=KEPADATAN..JIWA.KM2.,  color=NAMA.KABUPATEN.KOTA))
+
+#Menambahkan layer
+plot.dki <- plot.dki + layer(geom = "point", stat="identity", position = "identity")
+plot.dki <- plot.dki + labs(x="Luas Wilayah (km2)", y="Kepadatan Jiwa (km2)", color="Kabupaten/Kota")
+plot.dki + facet_wrap( ~ NAMA.KABUPATEN.KOTA, ncol=2)
+```
+
+## Faceting pada Histogram
+
+Dengan menggunakan function yang sama kita juga bisa memecah histogram menjadi facet grafik.
+
+```{r}
+library(ggplot2)
+
+#Membaca data csv dan dimasukkan ke variable penduduk.dki
+penduduk.dki <- read.csv("https://storage.googleapis.com/dqlab-dataset/dkikepadatankelurahan2013.csv", sep=",")
+
+#Menambahkan data dan aesthetic mapping
+plot.dki <- ggplot(data=penduduk.dki, aes(x=KEPADATAN..JIWA.KM2.,  fill=NAMA.KABUPATEN.KOTA))
+
+#Menambahkan layer
+plot.dki <- plot.dki + geom_histogram(binwidth=10000)
+plot.dki <- plot.dki + labs(x="Kepadatan Jiwa (km2)", y="Jumlah Kelurahan", color="Kabupaten/Kota")
+plot.dki + facet_wrap( ~ NAMA.KABUPATEN.KOTA, ncol=2)
+```
+
+## Kesimpulan
+Selamat, Anda telah menyelesaikan seluruh teori pengantar dan praktek mengenai visualisasi dengan ggplot2.
+
+Sepanjang course ini Anda telah mempelajari fundamental data visualisasi ggplot2 dengan pembelajaran kunci sebagai berikut:
+
++ Konsep rancangan ggplot2 sebagai grammar of graphics yang memecah satu grafik menjadi komponen-komponen visual.
+
++ Komponen plot sebagai kanvas dasar sebelum bisa meghasilkan berbagai macam grafik.
+
++ Data dan aesthetic mapping sebagai isi untuk plot dan grafik.
+
++ Layer sebagai komponen grafik itu sendiri, yang terdiri dari geom, stat dan position.
+
++ Pengunaan layer dan transformasi data yang diperlukan untuk menghasilkan scatter plot, histogram, line chart, bar chart, dan pie chart.
+
++ Faceting untuk memecah grafik sehingga lebih mudah dianalisa.
